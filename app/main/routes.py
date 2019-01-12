@@ -87,8 +87,15 @@ def explore():
         .paginate(page, current_app.config['POSTS_PER_PAGE'], False)
 
     next_url, prev_url = _get_paginate_url(posts, 'main.explore')
+    pager = {
+        'next_url': next_url,
+        'prev_url': prev_url,
+        'total': posts.total,
+        'page': page,
+        'page_count': ceil(posts.total/current_app.config['POSTS_PER_PAGE'])
+    }
 
-    return render_template('index.html', title=_('博客'), posts=posts.items, next_url=next_url, prev_url=prev_url)
+    return render_template('index.html', title=_('博客'), posts=posts.items, pager=pager)
 
 
 @bp.route('/user/<username>')
