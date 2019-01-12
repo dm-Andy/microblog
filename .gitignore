@@ -1,0 +1,8 @@
+.vagrant
+.vscode
+*.log
+.env
+flask
+logs
+__pycache__
+*.mo
