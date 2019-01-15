@@ -1,0 +1,30 @@
+<table class="table">
+    <tr>
+        <td width="64" style="border: 0px;"><img src="{{ user.avatar(64) }}"></td>
+        <td style="border: 0px;">
+            <p>
+                <a href="{{ url_for('main.user', username=user.username) }}">
+                    {{ user.username }}
+                </a>
+            </p>
+            <small>
+                {% if user.about_me %}<p>{{ user.about_me }}</p>{% endif %}
+                {% if user.last_seen %}
+                <p>{{ _('最近登录') }}: {{ moment(user.last_seen).format('lll') }}</p>
+                {% endif %}
+                <p>{{ _('粉丝') }}：{{ user.followers.count() }} | {{ _('关注') }}：{{ user.followed.count() }}</p>
+                {% if user != current_user %}
+                    {% if not current_user.is_following(user) %}
+                    <a href="{{ url_for('main.follow', username=user.username) }}">
+                        {{ _('关注') }}
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('main.unfollow', username=user.username) }}">
+                        {{ _('取关') }}
+                    </a>
+                    {% endif %}
+                {% endif %}
+            </small>
+        </td>
+    </tr>
+</table>

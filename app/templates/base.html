@@ -1,88 +1,165 @@
 {% extends 'bootstrap/base.html' %}
 
 {% block title %}
-    {% if title %} {{title}} - Microblog {% else %} Microblog {% endif %}
+{% if title %} {{title}} - Microblog {% else %} Microblog {% endif %}
 {% endblock %}
 
 {% block navbar %}
 <nav class="navbar navbar-default">
-  <div class="container">
-      <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-              <span class="sr-only">Toggle navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-          </button>
-          <a class="navbar-brand" href="{{ url_for('main.index') }}">Microblog</a>
-      </div>
-      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav">
-              <li><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
-              <li><a href="{{ url_for('main.explore') }}">{{ _('博客') }}</a></li>
-          </ul>
-          {% if g.search_form %}
-          <form class="navbar-form navbar-left" method="get" action="{{ url_for('main.search') }}">
-              <div class="form-group">
-                  {{ g.search_form.q(size=20, class='form-control',placeholder=g.search_form.q.label.text) }}
-              </div>
-          </form>
-          {% endif %}
-          <ul class="nav navbar-nav navbar-right">
-              {% if current_user.is_anonymous %}
-              <li><a href="{{ url_for('auth.login') }}">{{ _('登录') }}</a></li>
-              {% else %}
-              <li><a href="{{ url_for('main.user', username=current_user.username) }}">{{ _('用户中心') }}</a></li>
-              <li><a href="{{ url_for('auth.logout') }}">{{ _('退出') }}</a></li>
-              {% endif %}
-          </ul>
-      </div>
-  </div>
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1"
+                aria-expanded="false">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{{ url_for('main.index') }}">Microblog</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li><a href="{{ url_for('main.index') }}">{{ _('首页') }}</a></li>
+                <li><a href="{{ url_for('main.explore') }}">{{ _('博客') }}</a></li>
+            </ul>
+            {% if g.search_form %}
+            <form class="navbar-form navbar-left" method="get" action="{{ url_for('main.search') }}">
+                <div class="form-group">
+                    {{ g.search_form.q(size=20, class='form-control',placeholder=g.search_form.q.label.text) }}
+                </div>
+            </form>
+            {% endif %}
+            <ul class="nav navbar-nav navbar-right">
+                {% if current_user.is_anonymous %}
+                <li><a href="{{ url_for('auth.login') }}">{{ _('登录') }}</a></li>
+                {% else %}
+                <li>
+                    <a href="{{ url_for('main.messages') }}">
+                        {{ _('信息') }}
+                        {% set unread = current_user.unread_messages_count() %}
+                        <span class="badge" id="message_count">{{ unread }}</span>
+                    </a>
+                </li>
+                <li><a href="{{ url_for('main.user', username=current_user.username) }}">{{ _('用户中心') }}</a></li>
+                <li><a href="{{ url_for('auth.logout') }}">{{ _('退出') }}</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </nav>
 {% endblock %}
 
 {% block content %}
-    <div class="container">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-            <div class="alert alert-info" role="alert">{{ message }}</div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+<div class="container">
+    {% if current_user.is_authenticated %}
+    {% with tasks = current_user.get_tasks_in_progress() %}
+    {% if tasks %}
+        {% for task in tasks %}
+        <div class="alert alert-success" role="alert">
+            {{ task.description }}
+            <span id="{{ task.id }}-progress" data-export_posts>{{ task.get_progress() }}</span>%
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% endif %}
 
-        {# application content needs to be provided in the app_content block #}
-        {% block app_content %}{% endblock %}
-    </div>
+
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-info" role="alert">{{ message }}</div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {# application content needs to be provided in the app_content block #}
+    {% block app_content %}{% endblock %}
+</div>
 {% endblock %}
 
 {% block scripts %}
-    {{ super() }}
-    {{ moment.include_moment() }}
-    {{ moment.lang(g.locale) }}
+{{ super() }}
+{{ moment.include_moment() }}
+{{ moment.lang(g.locale) }}
 
-    <script>
-        $(function(){
-            $('a[data-translate]').click(function(){
-                id=$(this).data('id')
-                sl=$(this).data('source_language')
-                dl=$(this).data('dest_language')
-                $this=$(this)
-                $(this).parent().append('<img src="{{ url_for("static", filename="loading.gif") }}">')
+<script>
+    function set_msg_count(n){
+        $('#message_count').text(n)
+    }
 
-                $.post('/translate',{
-                    'text':$('#post'+id).text(),
-                    'source_language':sl,
-                    'dest_language':dl
-                }).done(function(res){
-                    $span=$this.parent()
-                    $span.text(res.text)
-                    $span.append($('<audio src="'+res.speak_url+'" controls="controls">播放</audio>'))
-                }).fail(function(){
-                    $this.parent.text('{{ _("错误：连接服务失败") }}')
-                })
+    function set_task_progress(task_id, progress) {
+            $('#' + task_id + '-progress').text(progress);
+        }
+
+    $(function () {
+        $('a[data-translate]').click(function () {
+            id = $(this).data('id')
+            sl = $(this).data('source_language')
+            dl = $(this).data('dest_language')
+            $this = $(this)
+            $(this).parent().append('<img src="{{ url_for("static", filename="loading.gif") }}">')
+
+            $.post('/translate', {
+                'text': $('#post' + id).text(),
+                'source_language': sl,
+                'dest_language': dl
+            }).done(function (res) {
+                $span = $this.parent()
+                $span.text(res.text)
+                $span.append($('<audio src="' + res.speak_url + '" controls="controls">播放</audio>'))
+            }).fail(function () {
+                $this.parent.text('{{ _("错误：连接服务失败") }}')
             })
-
         })
-    </script>
+
+        $('.user_popup >a').mouseenter(function () {
+            $span = $(this).parent()
+            username = $span.find('a').first().text().trim()
+            $.get('/user/' + username + '/popup').done(function (res) {
+                $span.popover({
+                    container: $span,
+                    html: true,
+                    content: res,
+                    trigger: 'hover',
+                    delay: { "show": 500, "hide": 100 }
+                }).popover('show')
+                flask_moment_render_all();
+            })
+        })
+
+
+        {% if current_user.is_authenticated %}
+        setInterval(function(){
+            $.get('{{url_for("main.notifications")}}').done(function(res){
+                // 这里的话可以用作者的方法，使用时间戳来过滤没有改变的通知，我想找一种好点的办法结果就悲剧了，所以在处理这方面就随意了
+                if (res==[]){
+                    $('[data-export_posts]').text(100)
+                }
+                flag=true
+                $(res).each(function(index,ele){
+                    if(ele.name=='task_progress'){
+                        flag=false
+                    }
+                    switch(ele.name){
+                        case 'unread_message_count':
+                            set_msg_count(ele.data);
+                            break;
+                        case 'task_progress':
+                            set_task_progress(ele.data.task_id,ele.data.progress);
+                            break;
+                    }
+                })
+                // 如果有多个任务在执行，由于任务执行完后就设置当前的通知is_read=true，所以不会跟其它通知信息过来
+                if(flag){
+                    $('[data-export_posts]').text(100)
+                }
+                
+            })
+        },3000)
+
+        {% endif %}
+
+    })
+</script>
 {% endblock %}

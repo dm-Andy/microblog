@@ -11,6 +11,8 @@ from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 from flask_babel import Babel, _, lazy_gettext as _l
 from elasticsearch import Elasticsearch
+from redis import Redis
+import rq
 
 
 db = SQLAlchemy()
@@ -30,6 +32,9 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     # app配置config
     app.config.from_object(config_class)
+
+    app.redis = Redis.from_url(app.config['REDIS_URL'])
+    app.task_queue = rq.Queue('microblog-tasks', connection=app.redis)
 
     app.elasticsearch = Elasticsearch([app.config['ELASTICSEARCH_URL']]) if app.config['ELASTICSEARCH_URL'] else None
     # 扩展初始化

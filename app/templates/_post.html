@@ -7,19 +7,22 @@
         </td>
         <td>
             {% set user_link %}
+            <span  class="user_popup">
                 <a href="{{ url_for('main.user', username=post.author.username) }}">
                     {{ post.author.username }}
                 </a>
+            </span>
             {% endset %}
             {{ _('%(username)s 说 %(when)s',
-                username=user_link, when=moment(post.timestamp).fromNow()) }}
+            username=user_link, when=moment(post.timestamp).fromNow()) }}
             <br>
             <span id='post{{ post.id }}'>{{ post.body }}</span>
 
             {% if post.language and post.language != g.locale %}
             <br><br>
             <span>
-                <a href="javascript:;" data-translate data-id='{{ post.id }}' data-source_language='auto' data-dest_language='{{ g.locale }}'>{{ _('翻译') }}</a>
+                <a href="javascript:;" data-translate data-id='{{ post.id }}' data-source_language='auto'
+                    data-dest_language='{{ g.locale }}'>{{ _('翻译') }}</a>
             </span>
             <!-- data-source_language='{{ post.language }}' -->
             {% endif %}

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2019-01-09 19:11+0800\n"
+"POT-Creation-Date: 2019-01-15 21:30+0800\n"
 "PO-Revision-Date: 2019-01-08 21:52+0000\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -18,192 +18,209 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.6.0\n"
 
-#: app/__init__.py:25
+#: app/__init__.py:23
 msgid "请先登录"
 msgstr "Please log in to access this page."
-
-#: app/email.py:26
-msgid "[microblog] 重置密码"
-msgstr "[Microblog] Reset Your Password"
-
-#: app/forms.py:8
-msgid "内容"
-msgstr "Content"
-
-#: app/forms.py:8
-msgid "内容不能为空"
-msgstr "Content cannot be empty"
-
-#: app/forms.py:9 app/forms.py:14
-msgid "保存"
-msgstr "Submit"
-
-#: app/forms.py:12 app/forms.py:28 app/forms.py:34
-msgid "用户名"
-msgstr "Username"
-
-#: app/forms.py:12 app/forms.py:28
-msgid "请输入用户名"
-msgstr "Please enter a user name"
-
-#: app/forms.py:13
-msgid "关于我"
-msgstr "About me"
-
-#: app/forms.py:24
-msgid "用户名已存在"
-msgstr "User already exists"
-
-#: app/forms.py:29 app/forms.py:36 app/forms.py:57
-msgid "密码"
-msgstr "Password"
-
-#: app/forms.py:29
-msgid "请输入密码"
-msgstr "Please enter your password"
-
-#: app/forms.py:30
-msgid "记住我"
-msgstr "Remember Me"
-
-#: app/forms.py:31 app/templates/base.html:26 app/templates/login.html:5
-#: app/views.py:163
-msgid "登录"
-msgstr "Sign In"
-
-#: app/forms.py:35 app/forms.py:53
-msgid "邮箱"
-msgstr "Email"
-
-#: app/forms.py:37 app/forms.py:58
-msgid "重复密码"
-msgstr "Repeat Password"
-
-#: app/forms.py:38 app/templates/login.html:13 app/templates/register.html:5
-#: app/views.py:184
-msgid "注册"
-msgstr "Register"
-
-#: app/forms.py:44
-msgid "用户已存在"
-msgstr "User already exists"
-
-#: app/forms.py:50
-msgid "该邮箱已注册"
-msgstr "This mailbox is registered"
-
-#: app/forms.py:54
-msgid "发送重置邮件"
-msgstr "Send reset mail"
-
-#: app/forms.py:59 app/templates/reset_password.html:5
-#: app/templates/reset_password_request.html:5 app/views.py:202
-#: app/views.py:221
-msgid "重置密码"
-msgstr "Repeat Password"
 
 #: app/translate.py:10
 msgid "错误：翻译服务未配置"
 msgstr "Error: the translation service is not configured."
 
-#: app/translate.py:19
+#: app/translate.py:20 app/translate.py:25
 msgid "错误：翻译服务返回错误"
 msgstr "Error: the translation service failed."
 
-#: app/views.py:56
-msgid "发表成功"
-msgstr "Published successfully"
+#: app/auth/email.py:8
+msgid "[microblog] 重置密码"
+msgstr "[Microblog] Reset Your Password"
 
-#: app/views.py:64
-msgid "主页"
-msgstr "Home"
+#: app/auth/forms.py:9 app/auth/forms.py:15 app/main/forms.py:16
+msgid "用户名"
+msgstr "Username"
 
-#: app/templates/base.html:22 app/views.py:76
-msgid "博客"
-msgstr "Explore"
+#: app/auth/forms.py:9 app/main/forms.py:16
+msgid "请输入用户名"
+msgstr "Please enter a user name"
 
-#: app/views.py:108
-msgid "修改成功"
-msgstr "Modify the success"
+#: app/auth/forms.py:10 app/auth/forms.py:17 app/auth/forms.py:38
+msgid "密码"
+msgstr "Password"
 
-#: app/templates/profile.html:5 app/templates/user.html:13 app/views.py:113
-msgid "个人资料编辑"
-msgstr "Edit your profile"
+#: app/auth/forms.py:10
+msgid "请输入密码"
+msgstr "Please enter your password"
 
-#: app/views.py:119
-msgid "你不能关注自己"
-msgstr "You can't focus on yourself"
+#: app/auth/forms.py:11
+msgid "记住我"
+msgstr "Remember Me"
 
-#: app/views.py:119
-msgid "关注 %{username}s 成功"
-msgstr "Followed %{username}s success"
+#: app/auth/forms.py:12 app/auth/routes.py:32 app/templates/auth/login.html:5
+#: app/templates/base.html:34
+msgid "登录"
+msgstr "Sign In"
 
-#: app/views.py:125
-msgid "你不能取关自己"
-msgstr "You can't follow yourself"
+#: app/auth/forms.py:16 app/auth/forms.py:34
+msgid "邮箱"
+msgstr "Email"
 
-#: app/views.py:125
-msgid "取消关注 %{username}s 成功"
-msgstr "Unfollow %{username}s success"
+#: app/auth/forms.py:18 app/auth/forms.py:39
+msgid "重复密码"
+msgstr "Repeat Password"
 
-#: app/views.py:131
-msgid "用户%{username}s没有找到"
-msgstr "User%{username}s not found"
+#: app/auth/forms.py:19 app/auth/routes.py:53 app/templates/auth/login.html:13
+#: app/templates/auth/register.html:5
+msgid "注册"
+msgstr "Register"
 
-#: app/views.py:153
+#: app/auth/forms.py:25
+msgid "用户已存在"
+msgstr "User already exists"
+
+#: app/auth/forms.py:31
+msgid "该邮箱已注册"
+msgstr "This mailbox is registered"
+
+#: app/auth/forms.py:35
+msgid "发送重置邮件"
+msgstr "Send reset mail"
+
+#: app/auth/forms.py:40 app/auth/routes.py:71 app/auth/routes.py:90
+#: app/templates/auth/reset_password.html:5
+#: app/templates/auth/reset_password_request.html:5
+msgid "重置密码"
+msgstr "Repeat Password"
+
+#: app/auth/routes.py:22
 msgid "用户名或密码错误"
 msgstr "Invalid username or password"
 
-#: app/views.py:182
+#: app/auth/routes.py:51
 msgid "注册成功"
 msgstr "Registered successfully"
 
-#: app/views.py:199
+#: app/auth/routes.py:68
 msgid "发送邮件成功，请检查你的邮箱"
 msgstr "Email sent successfully, please check your mailbox"
 
-#: app/views.py:219
+#: app/auth/routes.py:88
 msgid "密码重置成功"
 msgstr "Password reset successful"
 
-#: app/templates/404.html:4
-msgid "未找到"
-msgstr "Not Found"
+#: app/main/forms.py:10
+msgid "内容"
+msgstr "Content"
 
-#: app/templates/404.html:5 app/templates/500.html:7
-msgid "返回"
-msgstr "Back"
+#: app/main/forms.py:11
+msgid "内容不能为空"
+msgstr "Content cannot be empty"
 
-#: app/templates/500.html:5
-msgid "An unexpected error has occurred"
-msgstr "An unexpected error has occurred"
+#: app/main/forms.py:12 app/main/forms.py:18
+msgid "保存"
+msgstr "Submit"
 
-#: app/templates/500.html:6
-msgid "The administrator has been notified. Sorry for the inconvenience!"
-msgstr "The administrator has been notified. Sorry for the inconvenience!"
+#: app/main/forms.py:17
+msgid "关于我"
+msgstr "About me"
 
-#: app/templates/_post.html:14
+#: app/main/forms.py:28
+msgid "用户名已存在"
+msgstr "User already exists"
+
+#: app/main/forms.py:32 app/main/routes.py:179
+msgid "搜索"
+msgstr "Search"
+
+#: app/main/forms.py:44 app/templates/base.html:38
+#: app/templates/messages.html:4
+msgid "信息"
+msgstr "Messages"
+
+#: app/main/forms.py:45
+msgid "发送"
+msgstr "Send"
+
+#: app/main/routes.py:64
+msgid "发表成功"
+msgstr "Published successfully"
+
+#: app/main/routes.py:79
+msgid "主页"
+msgstr "Home"
+
+#: app/main/routes.py:98 app/templates/base.html:23
+msgid "博客"
+msgstr "Explore"
+
+#: app/main/routes.py:124
+msgid "修改成功"
+msgstr "Modify the success"
+
+#: app/main/routes.py:129 app/templates/profile.html:5
+#: app/templates/user.html:17
+msgid "个人资料编辑"
+msgstr "Edit your profile"
+
+#: app/main/routes.py:135
+msgid "你不能关注自己"
+msgstr "You can't focus on yourself"
+
+#: app/main/routes.py:135
+#, python-format
+msgid "关注 %(username)s 成功"
+msgstr "Followed %(username)s"
+
+#: app/main/routes.py:141
+msgid "你不能取关自己"
+msgstr "You can't follow yourself"
+
+#: app/main/routes.py:141
+#, python-format
+msgid "取消关注 %(username)s 成功"
+msgstr "Unfollowed %(username)s"
+
+#: app/main/routes.py:147
+#, python-format
+msgid "用户%(username)s没有找到"
+msgstr "User %(username)s Not Found"
+
+#: app/main/routes.py:202
+msgid "消息发送成功"
+msgstr "Send Message Success"
+
+#: app/main/routes.py:205 app/templates/user.html:36
+msgid "发送信息"
+msgstr "Send Message"
+
+#: app/main/routes.py:245
+msgid "已经有导出任务在运行了"
+msgstr "An export task is currently in progress"
+
+#: app/main/routes.py:247
+msgid "正在导出博客..."
+msgstr "Exporting posts..."
+
+#: app/templates/_post.html:16
 #, python-format
 msgid "%(username)s 说 %(when)s"
 msgstr "%(username)s said %(when)s"
 
-#: app/templates/_post.html:22
+#: app/templates/_post.html:25
 msgid "翻译"
 msgstr "Translate"
 
-#: app/templates/base.html:21
+#: app/templates/base.html:22
 msgid "首页"
 msgstr "Home"
 
-#: app/templates/base.html:28
+#: app/templates/base.html:43
 msgid "用户中心"
 msgstr "Profile"
 
-#: app/templates/base.html:29
+#: app/templates/base.html:44
 msgid "退出"
 msgstr "Logout"
 
-#: app/templates/base.html:74
+#: app/templates/base.html:112
 msgid "错误：连接服务失败"
 msgstr "Error: Could not contact server."
 
@@ -211,35 +228,76 @@ msgstr "Error: Could not contact server."
 msgid "你好"
 msgstr "Hi"
 
-#: app/templates/index.html:17 app/templates/user.html:29
+#: app/templates/index.html:18 app/templates/search.html:14
+#: app/templates/user.html:50
 msgid "上一页"
 msgstr "Previous Page"
 
-#: app/templates/index.html:22 app/templates/user.html:34
+#: app/templates/index.html:23 app/templates/search.html:19
+#: app/templates/user.html:55
 msgid "下一页"
 msgstr "Next Page"
 
-#: app/templates/login.html:14
-msgid "忘记密码？"
-msgstr "Forget your password？"
+#: app/templates/search.html:4
+msgid "搜索结果"
+msgstr "Search Results"
+
+#: app/templates/send_message.html:5
+#, python-format
+msgid "发送消息给 %(receiver)s"
+msgstr "Send Message to %(receiver)s"
 
 #: app/templates/user.html:8
 msgid "用户"
 msgstr "User"
 
-#: app/templates/user.html:10
+#: app/templates/user.html:12 app/templates/user_popup.html:13
 msgid "最近登录"
 msgstr "Last seen on"
 
-#: app/templates/user.html:11
+#: app/templates/user.html:14 app/templates/user_popup.html:15
 msgid "粉丝"
 msgstr "Followers"
 
-#: app/templates/user.html:11 app/templates/user.html:15
+#: app/templates/user.html:14 app/templates/user.html:28
+#: app/templates/user_popup.html:15 app/templates/user_popup.html:19
 msgid "关注"
 msgstr "Follow"
 
-#: app/templates/user.html:17
+#: app/templates/user.html:22
+msgid "导出你的博客数据"
+msgstr "Export your posts"
+
+#: app/templates/user.html:30 app/templates/user_popup.html:23
 msgid "取关"
 msgstr "Unfollow"
+
+#: app/templates/auth/login.html:14
+msgid "忘记密码？"
+msgstr "Forget your password？"
+
+#: app/templates/errors/404.html:4
+msgid "未找到"
+msgstr "Not Found"
+
+#: app/templates/errors/404.html:5 app/templates/errors/500.html:7
+msgid "返回"
+msgstr "Back"
+
+#: app/templates/errors/500.html:5
+msgid "An unexpected error has occurred"
+msgstr "An unexpected error has occurred"
+
+#: app/templates/errors/500.html:6
+msgid "The administrator has been notified. Sorry for the inconvenience!"
+msgstr "The administrator has been notified. Sorry for the inconvenience!"
+
+#~ msgid "关注 %{username}s 成功"
+#~ msgstr "Followed %{username}s success"
+
+#~ msgid "取消关注 %{username}s 成功"
+#~ msgstr "Unfollow %{username}s success"
+
+#~ msgid "用户%{username}s没有找到"
+#~ msgstr "User%{username}s not found"
 

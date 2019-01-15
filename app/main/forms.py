@@ -38,3 +38,8 @@ class SearchForm(FlaskForm):
         if 'csrf_enabled' not in kwargs:
             kwargs['csrf_enabled'] = False
         super().__init__(*args, **kwargs)
+
+
+class MessageForm(FlaskForm):
+    message = TextAreaField(_l('信息'), validators=[DataRequired(),Length(0,140)])
+    submit = SubmitField(_l('发送'))

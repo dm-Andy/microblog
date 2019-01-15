@@ -22,6 +22,8 @@ class Config(object):
     # 分页每页数量
     POSTS_PER_PAGE = 5
 
+    REDIS_URL = os.environ.get('REDIS_URL') or 'redis://'
+
     # mail 如果启用邮件发送 则export MAIL_SERVER=xxx 否则视为不启用
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = os.environ.get('MAIL_PORT') or 25
@@ -41,6 +43,9 @@ class Config(object):
     YOUDAO_APP_KEY = os.environ.get('YOUDAO_APP_KEY')
     YOUDAO_APP_SECRET_KEY = os.environ.get('YOUDAO_APP_SECRET_KEY')
     ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL')
+
+    # 常量
+    UNREAD_MESSAGE_COUNT = 'unread_message_count'
 
 
 class TestConfig(Config):

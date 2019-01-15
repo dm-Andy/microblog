@@ -1,9 +1,9 @@
 from app.main import bp
 from app import db
 from flask import render_template, flash, redirect, url_for, request, g, jsonify, current_app
-from app.main.forms import EditProfileForm, PostForm
+from app.main.forms import EditProfileForm, PostForm, MessageForm
 from flask_login import current_user, login_required
-from app.models import User, Post
+from app.models import User, Post, Message, Notification
 from datetime import datetime
 from flask_babel import _, get_locale
 from guess_language import guess_language
@@ -76,7 +76,7 @@ def index():
         'page': page,
         'page_count': ceil(posts.total/current_app.config['POSTS_PER_PAGE'])
     }
-    return render_template('index.html', title=_('主页'), form=form, posts=posts.items,pager=pager)
+    return render_template('index.html', title=_('主页'), form=form, posts=posts.items, pager=pager)
 
 
 @bp.route('/explore')
@@ -177,3 +177,75 @@ def search():
     prev_url = url_for('main.search', page=page-1,
                        q=g.search_form.q.data) if page > 1 else None
     return render_template('search.html', title=_('搜索'), posts=posts, total=total, next_url=next_url, prev_url=prev_url)
+
+
+@bp.route('/user/<username>/popup')
+def user_popup(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    return render_template('user_popup.html', user=user)
+
+
+@bp.route('/send_message/<receiver>', methods=['GET', 'POST'])
+@login_required
+def send_message(receiver):
+    user = User.query.filter_by(username=receiver).first_or_404()
+
+    form = MessageForm()
+    if form.validate_on_submit():
+        message = Message(author=current_user,
+                          receiver=user,
+                          body=form.message.data)
+        db.session.add(message)
+        # 添加用户通知
+        user.add_notification(current_app.config['UNREAD_MESSAGE_COUNT'], user.unread_messages_count())
+        db.session.commit()
+        flash(_('消息发送成功'))
+        return redirect(url_for('main.user',username=receiver))
+
+    return render_template('send_message.html', receiver=receiver, title=_('发送信息'), form=form)
+
+@bp.route('/messages')
+@login_required
+def messages():
+    current_user.last_message_read_time = datetime.utcnow()
+    current_user.add_notification(current_app.config['UNREAD_MESSAGE_COUNT'], 0)
+    db.session.commit()
+
+    page = _get_page_num()
+
+    messages = current_user.received_messages\
+    .order_by(Message.timestamp.desc())\
+    .paginate(page, current_app.config['POSTS_PER_PAGE'], False)
+
+    next_url, prev_url = _get_paginate_url(messages, 'main.messages')
+
+    pager = {
+        'next_url': next_url,
+        'prev_url': prev_url,
+        'total': messages.total,
+        'page': page,
+        'page_count': ceil(messages.total/current_app.config['POSTS_PER_PAGE'])
+    }
+
+    return render_template('messages.html', pager=pager,messages=messages.items)
+
+@bp.route('/notifications')
+@login_required
+def notifications():
+    notifications = current_user.notifications.filter_by(is_read=False)
+    current_user.notifications.filter(Notification.name.in_(['unread_message_count'])).update({'is_read':True},synchronize_session=False)
+    db.session.commit()
+    return jsonify([
+        {'name': x.name,
+        'data': x.get_data()
+        } for x in notifications
+    ])
+
+@bp.route('/export_posts')
+def export_posts():
+    if current_user.get_task_in_progress('export_posts') is not None:
+        flash(_('已经有导出任务在运行了'))
+    else:
+        current_user.add_task('export_posts',_('正在导出博客...'))
+        db.session.commit()
+    return redirect(url_for('main.user', username=current_user.username))

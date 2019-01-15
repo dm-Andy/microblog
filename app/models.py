@@ -7,6 +7,9 @@ import jwt
 from time import time
 from flask import current_app
 from app.search import add_to_index, remove_from_index, query_index
+import json
+import redis
+import rq
 
 
 @login.user_loader
@@ -72,6 +75,55 @@ followers = db.Table('followers',
                      )
 
 
+class Message(db.Model):
+    __tablename__ = 'message'
+    id = db.Column(db.Integer, primary_key=True)
+    sender_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    receiver_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    body = db.Column(db.String(140))
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+
+    def __repr__(self):
+        return '<message {}>'.format(self.body)
+
+
+class Notification(db.Model):
+    __tablename__ = 'notification'
+    id = db.Column(db.Integer,primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    timestamp = db.Column(db.Float, index=True, default=time)
+    payload = db.Column(db.Text())
+    is_read = db.Column(db.Boolean,default=False,index=True) # 客户端轮询的时候的一个标记，如果没有改变就不发送数据到客户端
+
+    def get_data(self):
+        return json.loads(self.payload)
+
+    def __repr__(self):
+        return '<notification {}>'.format(self.name)
+
+
+class Task(db.Model):
+    __tablename__ = 'task'
+    id = db.Column(db.String(64), primary_key=True)
+    name = db.Column(db.String(128), index=True)
+    description = db.Column(db.String(128))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    complete = db.Column(db.Boolean, default=False)
+
+    def get_rq_job(self):
+        try:
+            job = rq.job.Job.fetch(self.id, connection=current_app.redis)
+        except(redis.exceptions.RedisError, rq.exceptions.NoSuchJobError):
+            return None
+        return job
+    
+    def get_progress(self):
+        job = self.get_rq_job()
+        return job.meta.get('progress', 0) if job is not None else 100
+
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
@@ -82,6 +134,7 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    last_message_read_time = db.Column(db.DateTime)
     # followed是右边的，我关注了哪些人，我被哪些人关注
     # 'User'是关系的右侧实体（左侧实体是父类）。由于这是一种自我指涉关系，我必须在两边使用相同的类。
     # secondary 配置用于此关系的关联表，我在此类之上定义了该关联表。
@@ -96,6 +149,26 @@ class User(UserMixin, db.Model):
         backref=db.backref('followers', lazy='dynamic'),
         lazy='dynamic'
     )
+    notifications = db.relationship('Notification', backref='user', lazy='dynamic')
+    tasks = db.relationship('Task', backref='user', lazy='dynamic')
+
+
+    sent_messages = db.relationship(
+        'Message', foreign_keys='Message.sender_id', backref='author', lazy='dynamic')
+    received_messages = db.relationship(
+        'Message', foreign_keys='Message.receiver_id', backref='receiver', lazy='dynamic')
+
+    def unread_messages_count(self):
+        last_read_time = self.last_message_read_time or datetime(1900, 1, 1)
+        return Message.query.filter_by(receiver=self)\
+            .filter(Message.timestamp > last_read_time)\
+            .count()
+
+    def add_notification(self, name, data):
+        self.notifications.filter_by(name=name).delete()
+        noti = Notification(name=name,user=self,payload=json.dumps(data))
+        db.session.add(noti)
+        return noti
 
     def avatar(self, size=128):
         tmp = md5(self.email.lower().encode('utf-8')).hexdigest()  # d=mm
@@ -143,6 +216,19 @@ class User(UserMixin, db.Model):
             return
         return User.query.get(user_id)
 
+    def add_task(self, name, desc, *args, **kwargs):
+        job = current_app.task_queue.enqueue('app.tasks.'+name,self.id,*args,**kwargs)
+        task = Task(id=job.get_id(),name=name,description=desc,user=self)
+        db.session.add(task)
+        return task
+    
+    def get_tasks_in_progress(self):
+        return self.tasks.filter_by(complete=False).all()
+    
+    def get_task_in_progress(self,name):
+        return self.tasks.filter_by(name=name,complete=False).first()
+
+
     def __repr__(self):
         return '<用户名：{}>'.format(self.username)
 
@@ -158,3 +244,4 @@ class Post(db.Model, SearchableMixin):
 
     def __repr__(self):
         return '<post {}>'.format(self.body)
+
