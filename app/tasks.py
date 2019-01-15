@@ -43,8 +43,8 @@ def export_posts(user_id):
             _set_task_progress(i*100 // posts_count)
 
         send_email('[Microblog] Your blog posts',
-                [app.config['ADMINS'][0]],
-                user.email,
+                app.config['ADMINS'][0],
+                [user.email],
                 render_template('email/export_posts.txt',user=user),
                 render_template('email/export_posts.html',user=user),
                 [('posts.json', 'application/json',json.dumps(data,indent=4))],
