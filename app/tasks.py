@@ -54,7 +54,7 @@ def export_posts(user_id):
         [user.email],
         render_template('email/export_posts.txt',user=user, data=json.dumps(data,indent=4)),
         render_template('email/export_posts.html',user=user, data=json.dumps(data,indent=4)),
-        True)
+        None, True)
 
     except:
         _set_task_progress(100)
