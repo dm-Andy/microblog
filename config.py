@@ -27,11 +27,9 @@ class Config(object):
     # mail 如果启用邮件发送 则export MAIL_SERVER=xxx 否则视为不启用
     MAIL_SERVER = os.environ.get('MAIL_SERVER')
     MAIL_PORT = os.environ.get('MAIL_PORT') or 25
-    MAIL_USE_SSL = os.environ.get('MAIL_USE_SSL')
     MAIL_USE_TLS = os.environ.get('MAIL_USE_TLS') is not None
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_DEFAULT_SENDER = os.environ.get('MAIL_DEFAULT_SENDER')
     ADMINS = ['635885852@qq.com']
     # 以下是gmail的配置，需要在账号中设置允许程序访问
     # export MAIL_SERVER=smtp.googlemail.com
